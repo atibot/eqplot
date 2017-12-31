@@ -1,0 +1,118 @@
+---
+title: "visualization of Earthquakes"
+author: "Hideh Tobita"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{visualization of Earthquakes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This package will provide tools to visualize the earthquake dataset obtained from the U.S. National Oceanographic and Atmospheric Administration (NOAA) on significant earthquakes around the world. This dataset contains information about 5,933 earthquakes over an approximately 4,000 year time span.
+
+# Dataset
+
+[NOAA Significant Earthquake Database](https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1)
+
+National Geophysical Data Center / World Data Service (NGDC / WDS):
+Significant Earthquake Database.
+National Geophysical Data Center, NOAA. doi:10.7289 / V5TD9V7K
+
+This package includes the raw dataset named "raw_df" as a data frame after cleaning the LOCATION_NAME by stripping out the country name (including the colon) and converts names to title case (as opposed to all caps). 
+
+```{r global_option}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE,
+                      fig.width = 7, fig.height = 7)
+```
+
+```{r setup, results='hide'}
+library(devtools)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(lubridate)
+library(stringr)
+library(grid)
+library(ggplot2)
+library(leaflet)
+load_all()
+```
+
+```{r raw_data }
+data("raw_df")
+head(raw_df)
+```
+
+# Data cleaning
+
+We will clean the raw dataset to make a clean data frame.
+The clean data frame should have the following:
+
+1. A date column created by uniting the year, month, day and converting it to the Date class
+
+2. LATITUDE, LONGITUDE, EQ_PRIMARY(magnitude) and TOTAL_DEATHS columns converted to numeric class.
+
+3. The rows whose LATITUDE, LONGITUDE or EQ_PRIMARY is missing (NA) are removed.
+
+
+```{r data_cleaning}
+clean_df <- raw_df %>% eq_clean_data()
+head(clean_df)
+```
+
+# Plot a time line of earthquakes
+
+We would like to visualize the times at which earthquakes occur within certain countries. In addition to showing the dates on which the earthquakes occur, we can also show the magnitudes (i.e. Richter scale value) and the number of deaths associated with each earthquake. We also add *label* (e.g. LOCATION_NAME)to *n_max* largest (by magnitude) earthquakes.
+
+```{r plot_timeline}
+test_df <-
+raw_df %>% eq_clean_data() %>%
+dplyr::filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") %>%
+dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01"))
+
+ggtimeline <- ggplot2::ggplot(test_df)
+ggtimeline2 <- ggtimeline + geom_timeline(
+ggplot2::aes(
+x = DATE,
+y = COUNTRY,
+size = EQ_PRIMARY,
+color = TOTAL_DEATHS,
+fill = TOTAL_DEATHS
+)
+) +
+eq_theme +
+ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
+ggplot2::scale_color_continuous(name = "# deaths") +
+ggplot2::scale_fill_continuous(name = "# deaths") +
+ggplot2::labs(title = "Earthquakes")
+
+ggtimeline3 <- ggtimeline2 + geom_timeline_label(ggplot2::aes(
+x = DATE,
+y = COUNTRY,
+mag = EQ_PRIMARY,
+label = LOCATION_NAME
+),
+n_max = 5)
+
+ggtimeline3
+```
+
+# Visualize earthquakes in space
+
+We will map the epicenters (LATITUDE /LONGITUDE) and annotates each point with in pop up window containing annotation data stored in a column of the data frame. The user should be able to choose which column is used for the annotation in the pop-up with a function argument named *annot_col*. Each earthquake should be shown with a circle, and the radius of the circle should be proportional to the earthquake's magnitude *EQ_PRIMARY*.
+
+```{r map1}
+raw_df %>% eq_clean_data() %>%
+dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+eq_map(annot_col = "DATE")
+```
+
+We can put together a character string for each earthquake that will show the cleaned location(*LOCATION_NAME*), the magnitude (*EQ_PRIMARY*), and the total number of deaths (*TOTAL_DEATHS*), with boldface labels for each ("Location", "Total deaths", and "Magnitude"). If an earthquake is missing values for any of these, both the label and the value are skipped for that element of the tag.
+
+```{r map2}
+raw_df %>% eq_clean_data() %>%
+dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+dplyr::mutate(popup_text = eq_create_label(.)) %>%
+eq_map(annot_col = "popup_text")
+```
