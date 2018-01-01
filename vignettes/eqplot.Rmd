@@ -1,5 +1,5 @@
 ---
-title: "Visualization of Earthquakes"
+title: "Visualization of Earthquake dataset"
 author: "Hideh Tobita"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -11,7 +11,7 @@ vignette: >
 
 This package will provide tools to visualize the earthquake dataset obtained from the U.S. National Oceanographic and Atmospheric Administration (NOAA) on significant earthquakes around the world. This dataset contains information about 5,933 earthquakes over an approximately 4,000 year time span.
 
-# Dataset
+## Dataset
 
 [NOAA Significant Earthquake Database](https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1)
 
@@ -44,7 +44,7 @@ data("raw_df")
 head(raw_df)
 ```
 
-# Data cleaning
+## Data cleaning
 
 We will clean the raw dataset to make a clean data frame.
 The clean data frame should have the following:
@@ -61,7 +61,7 @@ clean_df <- raw_df %>% eq_clean_data()
 head(clean_df)
 ```
 
-# Plot a time line of earthquakes
+## Plot a time line of earthquakes
 
 We would like to visualize the times at which earthquakes occur within certain countries. In addition to showing the dates on which the earthquakes occur, we can also show the magnitudes (i.e. Richter scale value) and the number of deaths associated with each earthquake. We also add *label* (e.g. LOCATION_NAME)to *n_max* largest (by magnitude) earthquakes.
 
@@ -99,7 +99,7 @@ ggtimeline3
 ```
 
 
-# Visualize earthquakes in space
+## Visualize earthquakes in space
 
 We will map the epicenters (LATITUDE /LONGITUDE) and annotates each point with in pop up window containing annotation data stored in a column of the data frame. The user should be able to choose which column is used for the annotation in the pop-up with a function argument named *annot_col*. Each earthquake should be shown with a circle, and the radius of the circle should be proportional to the earthquake's magnitude *EQ_PRIMARY*.
 
