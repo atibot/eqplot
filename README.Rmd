@@ -88,3 +88,4 @@ Once the package is installed, view the vignette for more details.
 ```{r vignette, eval= FALSE}
 vignette(topic = "eqplot", package = "eqplot")
 ```
+
