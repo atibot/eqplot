@@ -1,5 +1,5 @@
 ---
-title: "visualization of Earthquakes"
+title: "Visualization of Earthquakes"
 author: "Hideh Tobita"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -21,12 +21,12 @@ National Geophysical Data Center, NOAA. doi:10.7289 / V5TD9V7K
 
 This package includes the raw dataset named "raw_df" as a data frame after cleaning the LOCATION_NAME by stripping out the country name (including the colon) and converts names to title case (as opposed to all caps). 
 
-```{r global_option}
+```{r global_option, echo= FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE,
-                      fig.width = 7, fig.height = 7)
+                      fig.width = 7, fig.height = 5)
 ```
 
-```{r setup, results='hide'}
+```{r setup, echo = FALSE, results='hide'}
 library(devtools)
 library(readr)
 library(tidyr)
@@ -98,6 +98,7 @@ n_max = 5)
 ggtimeline3
 ```
 
+
 # Visualize earthquakes in space
 
 We will map the epicenters (LATITUDE /LONGITUDE) and annotates each point with in pop up window containing annotation data stored in a column of the data frame. The user should be able to choose which column is used for the annotation in the pop-up with a function argument named *annot_col*. Each earthquake should be shown with a circle, and the radius of the circle should be proportional to the earthquake's magnitude *EQ_PRIMARY*.
@@ -107,6 +108,8 @@ raw_df %>% eq_clean_data() %>%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 eq_map(annot_col = "DATE")
 ```
+
+
 
 We can put together a character string for each earthquake that will show the cleaned location(*LOCATION_NAME*), the magnitude (*EQ_PRIMARY*), and the total number of deaths (*TOTAL_DEATHS*), with boldface labels for each ("Location", "Total deaths", and "Magnitude"). If an earthquake is missing values for any of these, both the label and the value are skipped for that element of the tag.
 
