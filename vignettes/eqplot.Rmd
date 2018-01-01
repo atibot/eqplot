@@ -1,5 +1,5 @@
 ---
-title: "Visualization of Earthquakes"
+title: "Visualization of Earthquake dataset"
 author: "Hideh Tobita"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

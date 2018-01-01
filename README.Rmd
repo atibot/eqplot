@@ -1,0 +1,89 @@
+---
+output: github_document
+---
+
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# eqplot
+
+This package will provide tools to visualize the earthquake dataset obtained from the U.S. National Oceanographic and Atmospheric Administration (NOAA) on significant earthquakes around the world. This dataset contains information about 5,933 earthquakes over an approximately 4,000 year time span.
+
+
+## Installation
+
+You can install eqplot from github with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("atibot/eqplot", build_vignettes = TRUE)
+```
+
+
+## Examples
+
+These are basic examples which show you how to solve common problems. 
+
+```{r example_timeline, eval = FALSE}
+## basic example code
+data("raw_df")
+test_df <-
+raw_df %>% eq_clean_data() %>%
+dplyr::filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") %>%
+dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01"))
+
+ggtimeline <- ggplot2::ggplot(test_df)
+ggtimeline2 <- ggtimeline + geom_timeline(
+ggplot2::aes(
+x = DATE,
+y = COUNTRY,
+size = EQ_PRIMARY,
+color = TOTAL_DEATHS,
+fill = TOTAL_DEATHS
+)
+) +
+eq_theme +
+ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
+ggplot2::scale_color_continuous(name = "# deaths") +
+ggplot2::scale_fill_continuous(name = "# deaths") +
+ggplot2::labs(title = "Earthquakes")
+
+ggtimeline3 <- ggtimeline2 + geom_timeline_label(ggplot2::aes(
+x = DATE,
+y = COUNTRY,
+mag = EQ_PRIMARY,
+label = LOCATION_NAME
+),
+n_max = 5)
+
+ggtimeline3
+```
+
+```{r example_map1, eval = FALSE}
+data("raw_df")
+raw_df %>% eq_clean_data() %>%
+dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+eq_map(annot_col = "DATE")
+```
+
+```{r example_map2, , eval = FALSE}
+data("raw_df")
+raw_df %>% eq_clean_data() %>%
+dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
+dplyr::mutate(popup_text = eq_create_label(.)) %>%
+eq_map(annot_col = "popup_text")
+```
+
+## Vignette
+
+Once the package is installed, view the vignette for more details.
+
+```{r vignette, eval= FALSE}
+vignette(topic = "eqplot", package = "eqplot")
+```
