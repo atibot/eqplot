@@ -9,7 +9,42 @@ geom_timeline(mapping = NULL, data = NULL, stat = "timeline",
   inherit.aes = TRUE, xmin = NULL, xmax = NULL, ...)
 }
 \arguments{
-\item{data}{A data frame of cleaned data}
+\item{mapping}{Set of aesthetic mappings created by \code{\link{aes}} or
+\code{\link{aes_}}. If specified and \code{inherit.aes = TRUE} (the
+default), it is combined with the default mapping at the top level of the
+plot. You must supply \code{mapping} if there is no plot mapping.}
+
+\item{data}{The data to be displayed in this layer. There are three
+   options:
+
+   If \code{NULL}, the default, the data is inherited from the plot
+   data as specified in the call to \code{\link{ggplot}}.
+
+   A \code{data.frame}, or other object, will override the plot
+   data. All objects will be fortified to produce a data frame. See
+   \code{\link{fortify}} for which variables will be created.
+
+   A \code{function} will be called with a single argument,
+   the plot data. The return value must be a \code{data.frame.}, and
+   will be used as the layer data.}
+
+\item{stat}{The statistical transformation to use on the data for this
+layer, as a string.}
+
+\item{position}{Position adjustment, either as a string, or the result of
+a call to a position adjustment function.}
+
+\item{na.rm}{If \code{FALSE}, the default, missing values are removed with
+a warning. If \code{TRUE}, missing values are silently removed.}
+
+\item{show.legend}{logical. Should this layer be included in the legends?
+\code{NA}, the default, includes if any aesthetics are mapped.
+\code{FALSE} never includes, and \code{TRUE} always includes.}
+
+\item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
+rather than combining with them. This is most useful for helper functions
+that define both data and aesthetics and shouldn't inherit behaviour from
+the default plot specification, e.g. \code{\link{borders}}.}
 
 \item{xmin}{A Date class date which specifies the minimum timeline range.
 This is optional. If not specified, The minimum timeline range of the
@@ -19,15 +54,10 @@ This is optional. If not specified, The minimum timeline range of the
 This is optional. If not specified, The maximum timeline range of the
  \code{data} is assumed.}
 
-\item{aes(x, }{y, size, color, fill) Aesthetics as follows:
-x  A Date class (DATE)
-y  A factor (e.g. COUNTRY)
-size   A numeric magnitude (EQ_PRIMARY)
-color  A numeric deaths (TOTAL_DEATHS)
-fill   A numeric deaths (TOTAL_DEATHS)}
-
-\item{alpha}{A numeric value to specify transparency of points.
-THis is optional (default value is 0.3)}
+\item{...}{other arguments passed on to \code{\link{layer}}. These are
+often aesthetics, used to set an aesthetic to a fixed value, like
+\code{color = "red"} or \code{size = 3}. They may also be parameters
+to the paired geom/stat.}
 }
 \value{
 plot of a time line of earthquakes ranging from xmin to xmax dates
@@ -44,23 +74,20 @@ each level of the factor (e.g. country).
 \examples{
 \dontrun{
 data(raw_df)
-test_df <- raw_df \%>\% eq_clean_data() \%>\%
+raw_df \%>\% eq_clean_data() \%>\%
 filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") \%>\%
-dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01"))
-ggtimeline <- ggplot2::ggplot(test_df)
-ggtimeline2 <- ggtimeline +
-               geom_timeline(ggplot2::aes(
+dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01")) \%>\%
+ggplot2::ggplot() +
+geom_timeline(ggplot2::aes(
                            x = DATE,
                            y = COUNTRY,
                            size = EQ_PRIMARY,
-                           color = TOTAL_DEATHS,
-                           fill = TOTAL_DEATHS) +
-             eq_theme +
+                           fill = TOTAL_DEATHS)
+                           ) +
+eq_theme +
              ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
-             ggplot2::scale_color_continuous(name = "# deaths") +
              ggplot2::scale_fill_continuous(name = "# deaths") +
-             ggplot2::labs(title = "Earthquakes")
-ggtimeline2
+             labs("Earthquakes")
 }
 
 }

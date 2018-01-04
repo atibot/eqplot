@@ -1,3 +1,20 @@
+globalVariables(
+  c(
+    "YEAR",
+    "MONTH",
+    "STATE",
+    "DAY",
+    "LATITUDE",
+    "LONGITUDE",
+    "EQ_PRIMARY",
+    "TOTAL_DEATHS",
+    "DATE",
+    "year",
+    "month",
+    "day",
+    "BC"
+  )
+)
 #' Package: \code{eqplot}
 #'
 #' This package will provide tools to visualize the earthquake dataset obtained
@@ -25,15 +42,15 @@
 #' @note As this is just an internal function to be used for the other functions,
 #'  it is not exported.
 #'
-#' @import lubridate
-#' @import dplyr
+#' @importFrom lubridate ymd year day
+#' @impor dplyr
 bc_date <- function(ad) {
   c <- lubridate::ymd("0000-01-01") #dummy day
   ad1 <-
     lubridate::ymd(formatC(lubridate::year(ad), width = 4, flag = 0) , truncated = 2)
   diffdays <- ad - ad1
   bc1 <- c - (ad1 - c) + 1
-  bc1 <- dplyr::if_else (day(bc1) == 2 , bc1 - 1, bc1)
+  bc1 <- dplyr::if_else (lubridate::day(bc1) == 2 , bc1 - 1, bc1)
   bc <- bc1 + diffdays
 }
 #' Get Date class date from chracter type date reprezentation: \code{eq_date}
@@ -48,7 +65,7 @@ bc_date <- function(ad) {
 #' @note This can be used to specify the date of earthquake occurence
 #' for the other functions` arguments.
 #'
-#' @import lubridate
+#' @importFrom lubridate ymd
 #'
 #' @examples
 #' eq_date("2001-01-01")
@@ -79,7 +96,8 @@ eq_date <- function(x){
 #' @return A data frame of clean data
 #'
 #' @import dplyr
-#' @import tidyr
+#' @importFrom tidyr unite
+#' @importFrom lubridate ymd
 #'
 #' @examples \dontrun{
 #' data(raw_df)
@@ -114,7 +132,7 @@ eq_clean_data <- function(raw_df) {
       LONGITUDE = as.numeric(LONGITUDE),
       EQ_PRIMARY = as.numeric(EQ_PRIMARY),
       #magnitude
-      TOTAL_DEATHS = as.numeric(DEATHS)
+      TOTAL_DEATHS = as.numeric(TOTAL_DEATHS)
       #total deaths
     ) %>%
     dplyr::filter(!(is.na(LATITUDE) | is.na(LONGITUDE))) %>%
@@ -133,7 +151,7 @@ eq_clean_data <- function(raw_df) {
 #'
 #' @return A character vector cleaned
 #'
-#' @import stringr
+#' @importFrom stringr str_to_title
 #'
 #' @examples \dontrun{
 #'  library(readr)
@@ -160,17 +178,8 @@ eq_location_clean <- function(x) {
 #' some stratification in which case multiple time lines will be plotted for
 #' each level of the factor (e.g. country).
 #'
-#' @param data A data frame of cleaned data
+#' @inheritParams ggplot2::geom_point
 #'
-#' @param aes(x, y, size, color, fill) Aesthetics as follows:
-#'            x  A Date class (DATE)
-#'            y  A factor (e.g. COUNTRY)
-#'            size   A numeric magnitude (EQ_PRIMARY)
-#'            color  A numeric deaths (TOTAL_DEATHS)
-#'            fill   A numeric deaths (TOTAL_DEATHS)
-#'
-#' @param alpha A numeric value to specify transparency of points.
-#'              THis is optional (default value is 0.3)
 #' @param xmin A Date class date which specifies the minimum timeline range.
 #'        This is optional. If not specified, The minimum timeline range of the
 #'        \code{data} is assumed.
@@ -184,27 +193,24 @@ eq_location_clean <- function(x) {
 #'
 #' @import dplyr
 #' @import ggplot2
-#' @import grid
+#' @importFrom grid gpar pointsGrob
 #'
 #' @examples \dontrun{
 #' data(raw_df)
-#' test_df <- raw_df %>% eq_clean_data() %>%
+#' raw_df %>% eq_clean_data() %>%
 #' filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") %>%
-#' dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01"))
-#' ggtimeline <- ggplot2::ggplot(test_df)
-#' ggtimeline2 <- ggtimeline +
-#'                geom_timeline(ggplot2::aes(
+#' dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01")) %>%
+#' ggplot2::ggplot() +
+#' geom_timeline(ggplot2::aes(
 #'                            x = DATE,
 #'                            y = COUNTRY,
 #'                            size = EQ_PRIMARY,
-#'                            color = TOTAL_DEATHS,
-#'                            fill = TOTAL_DEATHS) +
-#'              eq_theme +
-#'              ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
-#'              ggplot2::scale_color_continuous(name = "# deaths") +
-#'              ggplot2::scale_fill_continuous(name = "# deaths") +
-#'              ggplot2::labs(title = "Earthquakes")
-#' ggtimeline2
+#'                            fill = TOTAL_DEATHS)
+#'                            ) +
+#' eq_theme +
+#' ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
+#' ggplot2::scale_fill_continuous(name = "# deaths") +
+#' ggplot2::labs("Earthquakes")
 #' }
 #'
 #' @export
@@ -233,7 +239,7 @@ geom_timeline <-  function(mapping = NULL,
 
 StatTimeline <- ggplot2::ggproto(
   "StatTimeline",
-  Stat,
+  ggplot2::Stat,
   setup_params = function(data, params) {
     #browser()
     if (is.null(params$xmin))
@@ -257,7 +263,7 @@ StatTimeline <- ggplot2::ggproto(
 ## geom_timeline
 GeomTimeline <- ggplot2::ggproto(
   "GeomTimeline",
-  Geom,
+  ggplot2::Geom,
   required_aes = c("x", "y", "size"),
   default_aes = ggplot2::aes(
     color = "blue",
@@ -267,7 +273,7 @@ GeomTimeline <- ggplot2::ggproto(
     stroke = 1,
     shape = 21
   ),
-  draw_key = draw_key_point,
+  draw_key = ggplot2::draw_key_point,
   draw_panel = function(data, panel_scales, coord) {
     #browser()
     coords <- coord$transform(data, panel_scales)
@@ -279,7 +285,7 @@ GeomTimeline <- ggplot2::ggproto(
       size = grid::unit(coords$size / 3, "char"),
       pch = coords$shape,
       gp = grid::gpar(
-        col = coords$colour,
+        #col = coords$colour,
         fill = coords$fill,
         alpha = coords$alpha
       )
@@ -293,6 +299,8 @@ GeomTimeline <- ggplot2::ggproto(
 #' New theme for the timeline plot: \code{eq_theme}
 #'
 #' This theme is for the earthquake timeline plot
+#'
+#' @import ggplot2
 #'
 #' @export
 eq_theme <-  ggplot2::theme_minimal() + ggplot2::theme(
@@ -314,25 +322,16 @@ eq_theme <-  ggplot2::theme_minimal() + ggplot2::theme(
 #' x, which is the date of the earthquake and label which takes the column name
 #' from which annotations will be obtained.
 #'
-#' @param data A data frame of cleaned data
-#'
-#' @param aes(x, y, mag, label) Aesthetics as follows:
-#'            x     A Date class column (DATE)
-#'            y     A factor column (e.g. COUNTRY)
-#'            mag   A numeric column (e.g. EQ_PRIMARY)
-#'            label A character column (e.g LOCATION_NAME)
+#' @inheritParams ggplot2::geom_point
 #'
 #' @param n_max  A integer to subset to n_max number of earthquakes.
 #'               This is optional. If not specified, 3 is assumed (default).
 #' @param xmin A Date class date which specifies the minimum timeline range.
 #'        This is optional. If not specified, the minimum timeline range of the
 #'        \code{data} is assumed.
-#'
 #' @param xmax A Date class date which specifies the maximum timeline range.
 #'        This is optional. If not specified, the maximum timeline range of the
 #'         \code{data} is assumed.
-#'
-#'
 #'
 #' @return  Adds a vertical line to each data point with a text annotation
 #'          for \code{n_max} largest (by magnitude) earthquakes.
@@ -345,7 +344,7 @@ eq_theme <-  ggplot2::theme_minimal() + ggplot2::theme(
 #'
 #' @import dplyr
 #' @import ggplot2
-#' @import grid
+#' @importFrom grid gpar segmentsGrob textGrob gTree gList
 #'
 #' @examples \dontrun{
 #' ggtimeline2 + geom_timeline_label(ggplot2::aes(
@@ -390,7 +389,7 @@ geom_timeline_label <-  function(mapping = NULL,
 ## stat_temp_label
 StatTimelinelabel <- ggplot2::ggproto(
   "StatTimeline_label",
-  Stat,
+  ggplot2::Stat,
   setup_params = function(data, params) {
     #browser()
     if (is.null(params$xmin))
@@ -419,10 +418,10 @@ StatTimelinelabel <- ggplot2::ggproto(
 
 GeomTimeline_label <- ggplot2::ggproto(
   "GeomTimeline_label",
-  Geom,
+  ggplot2::Geom,
   required_aes = c("x", "y", "label"),
   default_aes = ggplot2::aes(size = 1),
-  draw_key = draw_key_abline,
+  draw_key = ggplot2::draw_key_abline,
   draw_panel = function(data, panel_scales, coord) {
     #browser()
     coords <- coord$transform(data, panel_scales)
@@ -478,7 +477,7 @@ GeomTimeline_label <- ggplot2::ggproto(
 #' @return Visualization of earthquakes in space annotating each point with
 #' in pop up window
 #'
-#' @import leaflet
+#' @importFrom leaflet leaflet addTiles addCircleMarkers
 #'
 #' @examples \dontrun{
 #' data(raw_df)
