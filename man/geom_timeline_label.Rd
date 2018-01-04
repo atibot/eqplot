@@ -84,7 +84,7 @@ This geom_timeline_label function should be added with (+) to the previous
 }
 \examples{
 \dontrun{
-ggtimeline2 + geom_timeline_label(ggplot2::aes(
+ggtimeline + geom_timeline_label(ggplot2::aes(
                                   x = DATE,
                                   y = COUNTRY,
                                   mag = EQ_PRIMARY,

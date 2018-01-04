@@ -74,11 +74,15 @@ each level of the factor (e.g. country).
 \examples{
 \dontrun{
 library(dplyr)
+library(lubridate)
 data(raw_df)
-raw_df \%>\% eq_clean_data() \%>\%
+test_df <- raw_df \%>\% eq_clean_data() \%>\%
 filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") \%>\%
-dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01")) \%>\%
-ggplot2::ggplot() +
+dplyr::filter(DATE >= eq_date("2000-01-01") & DATE <= eq_date("2017-01-01"))
+}
+
+\dontrun{
+ggtimeline <- ggplot2::ggplot(test_df) +
 geom_timeline(ggplot2::aes(
                            x = DATE,
                            y = COUNTRY,
@@ -88,7 +92,9 @@ geom_timeline(ggplot2::aes(
 eq_theme +
 ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
 ggplot2::scale_fill_continuous(name = "# deaths") +
-ggplot2::labs("Earthquakes")
+ggplot2::ggtitle("Earthquakes")
+
+ggtimeline
 }
 
 }
