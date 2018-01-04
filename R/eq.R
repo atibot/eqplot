@@ -43,7 +43,7 @@ globalVariables(
 #'  it is not exported.
 #'
 #' @importFrom lubridate ymd year day
-#' @impor dplyr
+#' @import dplyr
 bc_date <- function(ad) {
   c <- lubridate::ymd("0000-01-01") #dummy day
   ad1 <-
@@ -155,6 +155,7 @@ eq_clean_data <- function(raw_df) {
 #'
 #' @examples \dontrun{
 #'  library(readr)
+#'  library(dplyr)
 #'  # Note that the raw data set has to be downloaded beforehand
 #'  raw_df <- readr::read_delim("data/rawdata.txt", "\t")
 #'  raw_df <- raw_df %>% dplyr::mutate(LOCATION_NAME = eq_location_clean(LOCATION_NAME))
@@ -196,6 +197,7 @@ eq_location_clean <- function(x) {
 #' @importFrom grid gpar pointsGrob
 #'
 #' @examples \dontrun{
+#' library(dplyr)
 #' data(raw_df)
 #' raw_df %>% eq_clean_data() %>%
 #' filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") %>%
@@ -480,6 +482,7 @@ GeomTimeline_label <- ggplot2::ggproto(
 #' @importFrom leaflet leaflet addTiles addCircleMarkers
 #'
 #' @examples \dontrun{
+#' library(dplyr)
 #' data(raw_df)
 #' raw_df %>% eq_clean_data() %>%
 #' dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
@@ -535,6 +538,7 @@ eq_map <- function(data, annot_col = "DATE") {
 #' @import dplyr
 #'
 #' @examples \dontrun{
+#' library(dplyr)
 #' data(raw_data)
 #' raw_data %>% eq_clean_data() %>%
 #' dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%

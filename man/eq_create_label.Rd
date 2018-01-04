@@ -27,6 +27,7 @@ This function takes the dataset as an argument and creates an HTML label
 }
 \examples{
 \dontrun{
+library(dplyr)
 data(raw_data)
 raw_data \%>\% eq_clean_data() \%>\%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) \%>\%

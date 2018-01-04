@@ -20,6 +20,7 @@ This function cleans the LOCATION_NAME column by stripping out the country
 \examples{
 \dontrun{
  library(readr)
+ library(dplyr)
  # Note that the raw data set has to be downloaded beforehand
  raw_df <- readr::read_delim("data/rawdata.txt", "\\t")
  raw_df <- raw_df \%>\% dplyr::mutate(LOCATION_NAME = eq_location_clean(LOCATION_NAME))

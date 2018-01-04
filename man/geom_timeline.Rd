@@ -73,6 +73,7 @@ each level of the factor (e.g. country).
 }
 \examples{
 \dontrun{
+library(dplyr)
 data(raw_df)
 raw_df \%>\% eq_clean_data() \%>\%
 filter(COUNTRY == "TURKEY" | COUNTRY == "JAPAN") \%>\%
@@ -85,9 +86,9 @@ geom_timeline(ggplot2::aes(
                            fill = TOTAL_DEATHS)
                            ) +
 eq_theme +
-             ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
-             ggplot2::scale_fill_continuous(name = "# deaths") +
-             labs("Earthquakes")
+ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
+ggplot2::scale_fill_continuous(name = "# deaths") +
+ggplot2::labs("Earthquakes")
 }
 
 }

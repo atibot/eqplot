@@ -28,6 +28,7 @@ earthquake's magnitude (\code{EQ_PRIMARY}).
 }
 \examples{
 \dontrun{
+library(dplyr)
 data(raw_df)
 raw_df \%>\% eq_clean_data() \%>\%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) \%>\%
