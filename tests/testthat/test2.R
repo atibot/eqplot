@@ -14,12 +14,10 @@ test_that("geom", {
         x = DATE,
         y = COUNTRY,
         size = EQ_PRIMARY,
-        color = TOTAL_DEATHS,
         fill = TOTAL_DEATHS
       )) +
         eq_theme +
         ggplot2::scale_size_continuous(name = "Richer scale value", breaks = c(0, 2, 4, 6, 8)) +
-        ggplot2::scale_color_continuous(name = "# deaths") +
         ggplot2::scale_fill_continuous(name = "# deaths") +
         ggplot2::labs(title = "Earthquakes")
   ggtimeline3 <- ggtimeline2 + geom_timeline_label(
