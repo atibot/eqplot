@@ -27,15 +27,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE,
 ```
 
 ```{r setup, echo = FALSE, results='hide'}
-library(devtools)
-library(tidyr)
 library(dplyr)
 library(lubridate)
-library(stringr)
-library(grid)
-library(ggplot2)
-library(leaflet)
-load_all()
+library(eqplot)
 ```
 
 ```{r raw_data }
