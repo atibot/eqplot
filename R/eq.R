@@ -28,7 +28,7 @@ globalVariables(
 #' Significant Earthquake Database.
 #' National Geophysical Data Center, NOAA. doi:10.7289 / V5TD9V7K
 
-#############################################################################
+##############################################################################
 
 #' Get BC date from mirrored AD date: \code{bc_date()}
 #'
