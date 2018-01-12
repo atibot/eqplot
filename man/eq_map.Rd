@@ -4,13 +4,15 @@
 \alias{eq_map}
 \title{Visualize earthquakes in space: \code{eq_map()}}
 \usage{
-eq_map(data, annot_col = "DATE")
+eq_map(data, annot_col = "DATE", cluster = FALSE)
 }
 \arguments{
 \item{data}{A data frame of the clean data}
 
 \item{annot_col}{A character string of a column name of the \code{data} for
 annotation}
+
+\item{cluster}{A logical flag (deafult FALSE). If TRUE, ClusterOPtion is used.}
 }
 \value{
 Visualization of earthquakes in space annotating each point with

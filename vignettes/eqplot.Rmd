@@ -23,7 +23,7 @@ This package includes the raw dataset named "raw_df" as a data frame after clean
 
 ```{r global_option, echo= FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE,
-                      fig.width = 7, fig.height = 5)
+                      fig.width = 8, fig.height = 5)
 ```
 
 ```{r setup, echo = FALSE, results='hide'}
@@ -102,11 +102,19 @@ eq_map(annot_col = "DATE")
 
 
 
-We can put together a character string for each earthquake that will show the cleaned location(*LOCATION_NAME*), the magnitude (*EQ_PRIMARY*), and the total number of deaths (*TOTAL_DEATHS*), with boldface labels for each ("Location", "Total deaths", and "Magnitude"). If an earthquake is missing values for any of these, both the label and the value are skipped for that element of the tag.
+We can put together a character string for each earthquake that will show the date(*DATE*), the cleaned location(*LOCATION_NAME*), the magnitude (*EQ_PRIMARY*), and the total number of deaths (*TOTAL_DEATHS*), with boldface labels for each ("Date", Location", "Total deaths", and "Magnitude"). If an earthquake is missing values for any of these, both the label and the value are skipped for that element of the tag.
 
 ```{r map2}
 raw_df %>% eq_clean_data() %>%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 dplyr::mutate(popup_text = eq_create_label(.)) %>%
 eq_map(annot_col = "popup_text")
+```
+
+Finally, we can show all data with cluster options below.
+
+```{r map3}
+raw_df %>% eq_clean_data() %>%
+dplyr::mutate(popup_text = eq_create_label(.)) %>%
+eq_map(annot_col = "popup_text", cluster = TRUE)
 ```

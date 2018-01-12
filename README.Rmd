@@ -65,7 +65,7 @@ dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 eq_map(annot_col = "DATE")
 ```
 
-### Map plot with Location, Magnitude and Deaths
+### Map plot with Date, Location, Magnitude and Deaths
 
 ```{r example_map2, , eval = FALSE}
 data("raw_df")
@@ -73,6 +73,14 @@ raw_df %>% eq_clean_data() %>%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 dplyr::mutate(popup_text = eq_create_label(.)) %>%
 eq_map(annot_col = "popup_text")
+```
+### Map plot with Cluster options
+
+```{r example_map3, , eval = FALSE}
+data("raw_df")
+raw_df %>% eq_clean_data() %>%
+dplyr::mutate(popup_text = eq_create_label(.)) %>%
+eq_map(annot_col = "popup_text", cluster = TRUE)
 ```
 
 ## Vignette

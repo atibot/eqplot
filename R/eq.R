@@ -482,6 +482,8 @@ GeomTimeline_label <- ggplot2::ggproto(
 #' @param annot_col A character string of a column name of the \code{data} for
 #' annotation
 #'
+#' @param cluster A logical flag (deafult FALSE). If TRUE, ClusterOPtion is used.
+#'
 #' @return Visualization of earthquakes in space annotating each point with
 #' in pop up window
 #'
@@ -496,7 +498,9 @@ GeomTimeline_label <- ggplot2::ggproto(
 #' }
 #'
 #' @export
-eq_map <- function(data, annot_col = "DATE") {
+eq_map <- function(data,
+                   annot_col = "DATE",
+                   cluster = FALSE) {
   #check and find the column required for annotation
   n <- 1
   coln <- colnames(data)
@@ -509,6 +513,12 @@ eq_map <- function(data, annot_col = "DATE") {
     stop("The specified column not found")
   }
   colnames(data)[n] <- "tmp"
+
+  #Cluster option
+  ClusterOptions <- NULL
+  if (cluster)
+    ClusterOptions <- leaflet::markerClusterOptions()
+
   #map the epicenters (LATITUDE/LONGITUDE) and annotates each point
   #with in pop up window.
   leaflet::leaflet() %>%
@@ -519,7 +529,8 @@ eq_map <- function(data, annot_col = "DATE") {
       lng = ~ LONGITUDE,
       lat = ~ LATITUDE,
       weight = 2,
-      popup = ~ paste(tmp)
+      popup = ~ paste(tmp),
+      clusterOptions = ClusterOptions
     )
 }
 
@@ -537,16 +548,16 @@ eq_map <- function(data, annot_col = "DATE") {
 #'
 #' @param data A data frame of the clean data
 #'
-#' @return An HTML label annotating each point with the cleaned location,
-#'  the magnitude (EQ_PRIMARY), and the total number of deaths (\code{TOTAL_DEATHS})
-#'  in pop up window.
+#' @return An HTML label annotating each point with the date(\code{DATE}), the
+#' cleaned location name(\code{LOCATION_NAME}), the magnitude (\code{EQ_PRIMARY})
+#' and the total number of deaths(\code{TOTAL_DEATHS}) in pop up window.
 #'
 #' @import dplyr
 #'
 #' @examples \dontrun{
 #' library(dplyr)
-#' data(raw_data)
-#' raw_data %>% eq_clean_data() %>%
+#' data(raw_df)
+#' raw_df %>% eq_clean_data() %>%
 #' dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) %>%
 #' dplyr::mutate(popup_text = eq_create_label(.)) %>%
 #' eq_map(annot_col = "popup_text")
@@ -554,6 +565,11 @@ eq_map <- function(data, annot_col = "DATE") {
 #'
 #' @export
 eq_create_label <- function(data) {
+  date <- dplyr::if_else(
+    !is.na(data$DATE),
+    paste("<b>Date:</b>", data$DATE, "<br />"),
+    ""
+  )
   location <- dplyr::if_else(
     !is.na(data$LOCATION_NAME),
     paste("<b>Location:</b>", data$LOCATION_NAME, "<br />"),
@@ -569,5 +585,5 @@ eq_create_label <- function(data) {
     paste("<b>Total deaths:</b>", data$TOTAL_DEATHS, "<br />"),
     ""
   )
-  paste(location, magnitude, deaths)
+  paste(date, location, magnitude, deaths)
 }

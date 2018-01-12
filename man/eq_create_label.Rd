@@ -10,9 +10,9 @@ eq_create_label(data)
 \item{data}{A data frame of the clean data}
 }
 \value{
-An HTML label annotating each point with the cleaned location,
- the magnitude (EQ_PRIMARY), and the total number of deaths (\code{TOTAL_DEATHS})
- in pop up window.
+An HTML label annotating each point with the date(\code{DATE}), the
+cleaned location name(\code{LOCATION_NAME}), the magnitude (\code{EQ_PRIMARY})
+and the total number of deaths(\code{TOTAL_DEATHS}) in pop up window.
 }
 \description{
 This function takes the dataset as an argument and creates an HTML label
@@ -28,8 +28,8 @@ This function takes the dataset as an argument and creates an HTML label
 \examples{
 \dontrun{
 library(dplyr)
-data(raw_data)
-raw_data \%>\% eq_clean_data() \%>\%
+data(raw_df)
+raw_df \%>\% eq_clean_data() \%>\%
 dplyr::filter(COUNTRY == "MEXICO" & lubridate::year(DATE) >= 2000) \%>\%
 dplyr::mutate(popup_text = eq_create_label(.)) \%>\%
 eq_map(annot_col = "popup_text")
